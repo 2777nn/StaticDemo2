@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix_Zero | 终端控制台</title>
+    <style>
+        /* 全局暗黑极客样式 */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace, "Noto Sans CJK SC";
+            background-color: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 霓虹发光文字效果 */
+        .neon-text {
+            color: #58a6ff;
+            text-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+        }
+
+        .matrix-text {
+            color: #39ff14;
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+        }
+
+        /* 顶部导航 */
+        .cyber-nav {
+            border-bottom: 1px solid #30363d;
+            background-color: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+        .nav-logo {
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #8b949e;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #39ff14;
+        }
+
+        /* 终端风格 Header */
+        .terminal-header {
+            max-width: 1100px;
+            margin: 30px auto 0;
+            padding: 0 20px;
+        }
+        .terminal-box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+        }
+        .terminal-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-r { background-color: #ff5f56; }
+        .dot-y { background-color: #ffbd2e; }
+        .dot-g { background-color: #27c93f; }
+        
+        .terminal-content p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        /* 主体布局 - 三栏/网格交错 */
+        .grid-container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        /* 文章列表（无卡片边框，改用流式线条） */
+        .stream-item {
+            border-left: 2px solid #30363d;
+            padding-left: 20px;
+            margin-bottom: 40px;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+        .stream-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #30363d;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .stream-item:hover {
+            border-color: #39ff14;
+        }
+        .stream-item:hover::before {
+            background-color: #39ff14;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        .post-time {
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .post-title {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+        .post-title a {
+            color: #f0f6fc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .post-title a:hover {
+            color: #58a6ff;
+        }
+        .post-desc {
+            color: #8b949e;
+            font-size: 14px;
+        }
+        .cyber-tags {
+            margin-top: 15px;
+        }
+        .cyber-tags span {
+            font-size: 12px;
+            color: #ff79c6;
+            border: 1px solid rgba(255, 121, 198, 0.3);
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-right: 8px;
+            background-color: rgba(255, 121, 198, 0.05);
+        }
+
+        /* 右侧边栏 */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .side-section {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .side-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8b949e;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .side-title::before {
+            content: ">";
+            color: #39ff14;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #27c93f;
+            box-shadow: 0 0 8px #27c93f;
+            margin-right: 5px;
+        }
+
+        /* 简易命令列表 */
+        .cmd-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+        .cmd-list li {
+            margin-bottom: 12px;
+        }
+        .cmd-list a {
+            color: #c9d1d9;
+            text-decoration: none;
+        }
+        .cmd-list a:hover {
+            color: #58a6ff;
+            text-decoration: underline;
+        }
+
+        /* 页脚 */
+        .cyber-footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 12px;
+            color: #484f58;
+            border-top: 1px solid #30363d;
+            margin-top: 60px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="cyber-nav">
+        <div class="nav-container">
+            <a href="#" class="nav-logo matrix-text">[root@matrix-zero]~#</a>
+            <ul class="nav-links">
+                <li><a href="#">/posts</a></li>
+                <li><a href="#">/projects</a></li>
+                <li><a href="#">/about</a></li>
+                <li><a href="#">/logs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 模拟终端顶部 -->
+    <header class="terminal-header">
+        <div class="terminal-box">
+            <div class="terminal-bar">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+            </div>
+            <div class="terminal-content">
+                <p><span class="matrix-text">guest@matrix:~$</span> fetch-profile --user=Zero</p>
+                <p style="color: #8b949e;">[Initializing core system parameters...]</p>
+                <p><strong>USER:</strong> Matrix_Zero</p>
+                <p><strong>ROLE:</strong> 安全研究员 / 核心底层开发</p>
+                <p><strong>MOTTO:</strong> "代码就是现实，现实就是代码。"</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体区域 -->
+    <div class="grid-container">
+        
+        <!-- 文章流 -->
+        <main>
+            <div class="stream-item">
+                <div class="post-time">2026.06.20 // 23:14:02</div>
+                <h2 class="post-title"><a href="#">暗网流量监控与反追踪蜜罐技术搭建</a></h2>
+                <p class="post-desc">通过在多节点部署伪装的服务漏洞包，我们可以有效地捕获来自自动化扫描器的恶意载荷。本文记录了一次基于 eBPF 技术捕获零日漏洞利用的完整攻击链特征分析过程...</p>
+                <div class="cyber-tags">
+                    <span>#网络安全</span>
+                    <span>#eBPF</span>
+                    <span>#蜜罐</span>
+                </div>
+            </div>
+
+            <div class="stream-item">
+                <div class="post-time">2026.05.11 // 09:45:18</div>
+                <h2 class="post-title"><a href="#">从零实现一个微型异步运行时（Async Runtime）</a></h2>
+                <p class="post-desc">脱离标准库，如何用 500 行 Rust 代码实现一个基于 Epoll 的事件循环调度器？我们将深入探讨 Reactor-Executor 模式以及 Future 状态机的轮询细节...</p>
+                <div class="cyber-tags">
+                    <span>#Rust</span>
+                    <span>#异步编程</span>
+                    <span>#底层设计</span>
+                </div>
+            </div>
+
+            <div class="stream-item">
+                <div class="post-time">2026.04.05 // 14:00:00</div>
+                <h2 class="post-title"><a href="#">电子羊会梦见虚拟内存吗？硬件级别的数据隔离方案</a></h2>
+                <p class="post-excerpt post-desc">当操作系统本身已经不再可信，我们该如何在硬件层面保护敏感数据？本文简要评测了 Intel SGX 和 AMD SEV 在云计算机房中的实际防御表现与潜在侧信道漏洞...</p>
+                <div class="cyber-tags">
+                    <span>#硬件安全</span>
+                    <span>#可信计算</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- 侧边栏 -->
+        <aside class="sidebar-panel">
+            <!-- 节点状态 -->
+            <div class="side-section">
+                <h3 class="side-title">Node Status</h3>
+                <p style="font-size: 14px; margin: 0;"><span class="status-indicator"></span> 核心在线 (Uptime: 1,429h)</p>
+                <p style="font-size: 14px; margin: 8px 0 0 0; color: #8b949e;">LOC: 40.7128° N, 74.0060° W</p>
+            </div>
+
+            <!-- 最近探险 -->
+            <div class="side-section">
+                <h3 class="side-title">Recent Logs</h3>
+                <ul class="cmd-list">
+                    <li><a href="#">$ cat /etc/motd_2026.txt</a></li>
+                    <li><a href="#">$ ./run-quantum-sim.sh</a></li>
+                    <li><a href="#">$ git commit -m "fix: memory leak"</a></li>
+                </ul>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="cyber-footer">
+        <p>System authenticated. Powered by Vanilla HTML/CSS. © 2026 Matrix_Zero.</p>
+    </footer>
+
+</body>
+</html>
